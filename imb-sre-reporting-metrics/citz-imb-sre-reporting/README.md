@@ -25,7 +25,9 @@ imb-sre-reporting-metrics/
 ```bash
 cd imb-sre-reporting-metrics/citz-imb-sre-reporting
 cargo build
+```
 
 ### Running Locally
 ```bash
 cargo run
+```

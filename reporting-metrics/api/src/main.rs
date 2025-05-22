@@ -1,36 +1,38 @@
-use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
-use anyhow::{Context, Result};
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use chrono::{DateTime, Utc};
-use k8s_openapi::api::core::v1::Pod;
-use kube::{
-    api::{Api, ListParams},
-    Client,
-};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 use std::sync::Mutex;
+use std::time::{Duration, Instant};
+use tokio::time::sleep;
+use anyhow::Result;
+use reqwest::Client as HttpClient;
 
 // Data models
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct ProjectMetrics {
+struct ServiceMetrics {
     name: String,
-    uptime_seconds: u64,
-    pod_count: usize,
-    pod_status: HashMap<String, usize>, // Running, Pending, Failed, etc.
-    last_updated: DateTime<Utc>,
+    url: String,
+    status: String,
+    response_time_ms: u64,
+    uptime_percentage: f64,
+    availability_history: Vec<bool>,
+    last_checked: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ProjectRequest {
+struct ServiceConfig {
     name: String,
+    url: String,
 }
 
 // App state
 struct AppState {
-    metrics_cache: Mutex<HashMap<String, ProjectMetrics>>,
-    kube_client: Client,
+    metrics_cache: Mutex<HashMap<String, ServiceMetrics>>,
+    services: Mutex<Vec<ServiceConfig>>,
+    http_client: HttpClient,
 }
 
 #[derive(Serialize)]

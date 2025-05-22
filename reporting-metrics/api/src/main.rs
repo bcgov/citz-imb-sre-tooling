@@ -7,7 +7,6 @@ use std::env;
 use std::sync::Mutex;
 use std::time::{Duration};
 use tokio::time::sleep;
-use anyhow::Result;
 use reqwest::Client as HttpClient;
 
 // Data models
@@ -22,7 +21,7 @@ struct ServiceMetrics {
     last_checked: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 struct ServiceConfig {
     name: String,
     url: String,
@@ -131,7 +130,7 @@ async fn check_service(client: &HttpClient, service: &ServiceConfig) -> ServiceM
     }
 
     // Get existing metrics or create new ones
-    let mut metrics = ServiceMetrics {
+    let metrics = ServiceMetrics {
         name: service.name.clone(),
         url: service.url.clone(),
         status,

@@ -31,3 +31,31 @@ cargo build
 ```bash
 cargo run
 ```
+
+## 🐳 Running the API with Docker
+
+To run the `citz-imb-sre-reporting` API using the provided `Dockerfile`, follow these steps:
+
+### 1. **Build the Docker Image**
+From the `imb-sre-reporting-metrics/citz-imb-sre-reporting/` directory:
+
+```bash
+docker build -t citz-imb-sre-reporting .
+```
+
+### 2. ** Run the Container**
+```bash
+docker run -p 8080:8080 citz-imb-sre-reporting
+```
+
+This maps port 8080 from your local machine to the container. Make sure the server in your Rust code binds to 0.0.0.0 (not 127.0.0.1) so that it's accessible from outside the container.
+
+### 3. **Test the API**
+
+You can test the health check endpoint:
+
+```bash
+curl http://0.0.0.0:8080/health
+```
+
+Or open your browser to (here)[http://0.0.0.0:8080/health]

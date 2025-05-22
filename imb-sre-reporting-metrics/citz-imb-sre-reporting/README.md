@@ -58,13 +58,13 @@ You can test the health check endpoint:
 curl http://0.0.0.0:8080/health
 ```
 
-Or open your browser to [here](http://0.0.0.0:8080/health)
+Or open your browser to (here)[http://0.0.0.0:8080/health]
+
 You can test the greet endpoint with the following:
 
 ```bash
 curl -X POST http://0.0.0.0:8080/greet -H 'Content-type: application/json' -d '{"name":"me"}'   
 ```
 
-Or open your browser to (here)[http://0.0.0.0:8080/health]
 
 

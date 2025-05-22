@@ -58,9 +58,7 @@ You can test the health check endpoint:
 curl http://0.0.0.0:8080/health
 ```
 
-<<<<<<< HEAD
 Or open your browser to [here](http://0.0.0.0:8080/health)
-=======
 You can test the greet endpoint with the following:
 
 ```bash
@@ -68,4 +66,5 @@ curl -X POST http://0.0.0.0:8080/greet -H 'Content-type: application/json' -d '{
 ```
 
 Or open your browser to (here)[http://0.0.0.0:8080/health]
->>>>>>> 59e566f (adding documentation for greet endpoint)
+
+

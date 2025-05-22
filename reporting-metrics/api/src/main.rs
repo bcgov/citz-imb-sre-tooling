@@ -183,6 +183,9 @@ async fn health_check() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Load .env file if it exists
+    dotenv::dotenv().ok();
+
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
     let bind_addr = env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:8080".to_string());

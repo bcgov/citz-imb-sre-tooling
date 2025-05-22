@@ -84,37 +84,76 @@ async fn list_services(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json(services.clone())
 }
 
-#[derive(Serialize)]
-struct HealthResponse {
-    status: String
+// Remove a service from monitoring
+async fn remove_service(
+    data: web::Data<AppState>,
+    service_name: web::Path<String>,
+) -> impl Responder {
+    let name = service_name.into_inner();
+
+    // Remove from services list
+    {
+        let mut services = data.services.lock().unwrap();
+        let original_len = services.len();
+        services.retain(|s| s.name != name);
+
+        if services.len() == original_len {
+            return HttpResponse::NotFound().json("Service not found");
+        }
+    }
+
+    // Remove from metrics cache
+    {
+        let mut cache = data.metrics_cache.lock().unwrap();
+        cache.remove(&name);
+    }
+
+    HttpResponse::Ok().json("Service removed successfully")
 }
 
-#[get("/health")]
+// Health check endpoint
 async fn health_check() -> impl Responder {
-    web::Json(HealthResponse {
-        status: "OK".into(),
-    })
-}
-
-#[derive(Deserialize)]
-struct GreetRequest {
-    name: String,
-}
-
-#[post("/greet")]
-async fn greet_user(info: web::Json<GreetRequest>) -> impl Responder {
-    HttpResponse::Ok().json(format!("Hello, {}!", info.name))
+    HttpResponse::Ok().json("OK")
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Server is live at http://0.0.0.0:8080");
-    HttpServer::new(|| {
-        App::new()
-            .service(health_check)
-            .service(greet_user)
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
+
+    let bind_addr = env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:8080".to_string());
+
+    info!("Starting Service Metrics API server at http://{}", bind_addr);
+
+    // Create HTTP client
+    let http_client = HttpClient::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+        .expect("Failed to create HTTP client");
+
+    // Create application state
+    let app_state = web::Data::new(AppState {
+        metrics_cache: Mutex::new(HashMap::new()),
+        services: Mutex::new(Vec::new()),
+        http_client,
+    });
+
+    // Start background metrics collector
+    let collector_state = app_state.clone();
+    tokio::spawn(async move {
+        metrics_collector(collector_state).await;
+    });
+
+    HttpServer::new(move || {
+    App::new()
+        .app_data(app_state.clone())
+        .route("/health", web::get().to(health_check))
+        .route("/services", web::get().to(list_services))
+        .route("/services", web::post().to(register_service))
+        .route("/services/{name}", web::delete().to(remove_service))
+        .route("/metrics", web::get().to(get_all_metrics))
+        .route("/metrics/{name}", web::get().to(get_service_metrics))
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(bind_addr)?
     .run()
     .await
 }

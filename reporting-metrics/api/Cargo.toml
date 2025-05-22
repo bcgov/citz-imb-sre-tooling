@@ -1,5 +1,5 @@
 [package]
-name = "citz-imb-sre-reporting"
+name = "reporting-metrics-api"
 version = "0.1.0"
 edition = "2024"
 

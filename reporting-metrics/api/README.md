@@ -1,4 +1,4 @@
-# citz-imb-sre-reporting
+# CITZ IMB Reporting Metrics API
 
 A high-performance Rust-based API service for collecting and reporting SRE (Site Reliability Engineering) metrics. Designed for reliability, observability, and scalability, this service integrates with modern monitoring and tracing tools.
 
@@ -8,11 +8,13 @@ A high-performance Rust-based API service for collecting and reporting SRE (Site
 
 ## 🧱 Project Structure
 
-imb-sre-reporting-metrics/
-└── citz-imb-sre-reporting/
-├── src/
-├── Cargo.toml
-└── ..
+<pre>
+reporting-metrics/
+└── api/
+    ├── src/
+    ├── Cargo.toml
+    └── ...
+</pre>
 
 ## 🛠️ Getting Started
 

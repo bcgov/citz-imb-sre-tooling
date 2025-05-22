@@ -1,0 +1,50 @@
+# === Rust build artifacts ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/target/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/**/*.rs.bk
+
+# === Cargo ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/Cargo.lock
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.cargo/
+
+# === IDEs and editors ===
+# VS Code
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.vscode/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.code-workspace
+
+# IntelliJ / CLion / RustRover
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.idea/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.iml
+
+# === Logs and misc ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.log
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.tmp
+
+# === macOS ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.DS_Store
+
+# === Windows ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/Thumbs.db
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/ehthumbs.db
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/Desktop.ini
+
+# === Docker ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/docker-compose.override.yml
+
+# === Env files ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.env
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.env.*
+
+# === Optional: test & CI/CD artifacts ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/coverage/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/test-output/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.lcov
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/.nyc_output/
+
+# === Node/npm (if present) ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/node_modules/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/dist/
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/build/
+
+# === Other ===
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.swp
+/imb-sre-reporting-metrics/citz-imb-sre-reporting/*.swo

@@ -35,6 +35,55 @@ struct AppState {
     http_client: HttpClient,
 }
 
+// Register a new service to monitor
+async fn register_service(
+    data: web::Data<AppState>,
+    service: web::Json<ServiceConfig>,
+) -> impl Responder {
+    let mut services = data.services.lock().unwrap();
+
+    // Check if service already exists
+    for existing in services.iter() {
+        if existing.name == service.name {
+            return HttpResponse::BadRequest().json("Service with this name already exists");
+        }
+    }
+
+    services.push(service.into_inner());
+
+    HttpResponse::Ok().json("Service registered successfully")
+}
+
+// Get metrics for a specific service
+async fn get_service_metrics(
+    data: web::Data<AppState>,
+    service_name: web::Path<String>,
+) -> impl Responder {
+    let cache = data.metrics_cache.lock().unwrap();
+    let name = service_name.into_inner();
+
+    if let Some(metrics) = cache.get(&name) {
+        HttpResponse::Ok().json(metrics.clone())
+    } else {
+        HttpResponse::NotFound().json("Service not found or metrics not yet collected")
+    }
+}
+
+// Get all services with their latest metrics
+async fn get_all_metrics(data: web::Data<AppState>) -> impl Responder {
+    let cache = data.metrics_cache.lock().unwrap();
+    let metrics: Vec<ServiceMetrics> = cache.values().cloned().collect();
+
+    HttpResponse::Ok().json(metrics)
+}
+
+// List all registered services
+async fn list_services(data: web::Data<AppState>) -> impl Responder {
+    let services = data.services.lock().unwrap();
+
+    HttpResponse::Ok().json(services.clone())
+}
+
 #[derive(Serialize)]
 struct HealthResponse {
     status: String

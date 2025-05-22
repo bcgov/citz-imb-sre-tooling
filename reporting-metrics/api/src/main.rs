@@ -39,11 +39,13 @@ async fn register_service(
     data: web::Data<AppState>,
     service: web::Json<ServiceConfig>,
 ) -> impl Responder {
+    info!("Request to register service: {}", service.name);
     let mut services = data.services.lock().unwrap();
 
     // Check if service already exists
     for existing in services.iter() {
         if existing.name == service.name {
+            info!("Request to register service: {}", service.name);
             return HttpResponse::BadRequest().json("Service with this name already exists");
         }
     }
@@ -60,6 +62,7 @@ async fn get_service_metrics(
 ) -> impl Responder {
     let cache = data.metrics_cache.lock().unwrap();
     let name = service_name.into_inner();
+    info!("Request for metrics of service: {}", name);
 
     if let Some(metrics) = cache.get(&name) {
         HttpResponse::Ok().json(metrics.clone())
@@ -70,15 +73,19 @@ async fn get_service_metrics(
 
 // Get all services with their latest metrics
 async fn get_all_metrics(data: web::Data<AppState>) -> impl Responder {
+    info!("Request for all service metrics");
     let cache = data.metrics_cache.lock().unwrap();
     let metrics: Vec<ServiceMetrics> = cache.values().cloned().collect();
+    info!("Returning metrics for {} services", metrics.len());
 
     HttpResponse::Ok().json(metrics)
 }
 
 // List all registered services
 async fn list_services(data: web::Data<AppState>) -> impl Responder {
+    info!("Request to list all services");
     let services = data.services.lock().unwrap();
+    info!("Returning list of {} services", services.len());
 
     HttpResponse::Ok().json(services.clone())
 }
@@ -89,6 +96,7 @@ async fn remove_service(
     service_name: web::Path<String>,
 ) -> impl Responder {
     let name = service_name.into_inner();
+    info!("Request to remove service: {}", name);
 
     // Remove from services list
     {
@@ -97,6 +105,7 @@ async fn remove_service(
         services.retain(|s| s.name != name);
 
         if services.len() == original_len {
+            info!("Service not found for removal: {}", name);
             return HttpResponse::NotFound().json("Service not found");
         }
     }
@@ -107,6 +116,7 @@ async fn remove_service(
         cache.remove(&name);
     }
 
+    info!("Service '{}' removed successfully", name);
     HttpResponse::Ok().json("Service removed successfully")
 }
 

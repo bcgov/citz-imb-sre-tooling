@@ -24,8 +24,8 @@ RUN adduser --disabled-password --gecos "" appuser
 RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/target/release/citz-imb-sre-reporting .
+COPY --from=builder /app/target/release/reporting-metrics-api .
 USER appuser
 
 EXPOSE 8080
-CMD ["./citz-imb-sre-reporting"]
+CMD ["./reporting-metrics-api"]

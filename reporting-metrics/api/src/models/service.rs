@@ -17,5 +17,6 @@ pub struct ServiceMetrics {
 pub struct ServiceConfig {
    pub name: String,
    pub url: String,
+   pub github_repo: Option<String>,
 }
 

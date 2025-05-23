@@ -36,6 +36,7 @@ pub async fn check_service(client: &HttpClient, service: &ServiceConfig) -> Serv
         uptime_percentage: 0.0,
         availability_history: Vec::new(),
         last_checked: Utc::now(),
+        github_metrics: None,
     };
 
     // Return the updated metrics

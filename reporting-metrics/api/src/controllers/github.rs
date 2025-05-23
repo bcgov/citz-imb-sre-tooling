@@ -1,7 +1,6 @@
 use crate::state::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
-use std::collections::HashMap;
 
 pub async fn get_github_metrics(
     app_state: web::Data<AppState>,
@@ -10,9 +9,13 @@ pub async fn get_github_metrics(
 
     // Extract GitHub metrics from all services
     let mut github_metrics = json!({});
+
     for (service_name, metrics) in metrics_cache.iter() {
-        if let Some(github_data) = metrics.get("github_metrics") {
-            github_metrics.insert(service_name, github_data);
+        if let Some(ref github_metrics_str) = metrics.github_metrics {
+            // Parse JSON from string
+            if let Ok(parsed_metrics) = serde_json::from_str(github_metrics_str) {
+                github_metrics[service_name] = parsed_metrics;
+            }
         }
     }
 
@@ -26,9 +29,12 @@ pub async fn get_service_github_metrics(
     let service_name = path.into_inner();
     let metrics_cache = app_state.metrics_cache.lock().unwrap();
 
-    if let Some(service_metrics) = metrics_cache.get(&service_name) {
-        if let Some(github_metrics) = service_metrics.get("github_metrics") {
-            return HttpResponse::Ok().json(github_metrics);
+    if let Some(metrics) = metrics_cache.get(&service_name) {
+        if let Some(ref github_metrics_str) = metrics.github_metrics {
+            // Parse JSON from string
+            if let Ok(parsed_metrics) = serde_json::from_str::<serde_json::Value>(github_metrics_str) {
+                return HttpResponse::Ok().json(parsed_metrics);
+            }
         }
     }
 

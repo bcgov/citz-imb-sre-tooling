@@ -7,12 +7,12 @@ use actix_web::web;
 use chrono::{DateTime, Utc, Duration};
 use log::{error, info};
 use reqwest::header;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use serde::{Deserialize};
 
 const GITHUB_API_BASE_URL: &str = "https://api.github.com";
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct GitHubWorkflowRun {
     id: u64,
     name: String,
@@ -23,6 +23,7 @@ struct GitHubWorkflowRun {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct GitHubDeployment {
     id: u64,
     sha: String,
@@ -46,12 +47,15 @@ pub async fn collect_github_metrics(app_state: web::Data<AppState>) {
                 match fetch_repository_metrics(repo_url, &app_state).await {
                     Ok(metrics) => {
                         let mut metrics_cache = app_state.metrics_cache.lock().unwrap();
-                        let service_metrics = metrics_cache
-                            .entry(service.name.clone())
-                            .or_insert_with(HashMap::new);
-
-                        service_metrics.insert("github_metrics".to_string(), serde_json::to_value(metrics).unwrap());
-
+                        if let Some(service_metrics) = metrics_cache.get_mut(&service.name) {
+                            // Convert to JSON and store in a string field
+                            service_metrics.github_metrics = Some(serde_json::to_string(&metrics).unwrap());
+                        } else {
+                            // Create a new service metrics entry if it doesn't exist
+                            let mut new_metrics = crate::models::service::ServiceMetrics::default();
+                            new_metrics.github_metrics = Some(serde_json::to_string(&metrics).unwrap());
+                            metrics_cache.insert(service.name.clone(), new_metrics);
+                        }
                         info!("Updated GitHub metrics for service: {}", service.name);
                     }
                     Err(e) => {
@@ -197,7 +201,7 @@ async fn fetch_workflow_metrics(
         .await
         .map_err(|e| format!("Failed to parse workflow runs: {}", e))?;
 
-    let runs = workflow_data["workflow_runs"]
+    let runs: Vec<WorkflowRun> = workflow_data["workflow_runs"]
         .as_array()
         .unwrap_or(&Vec::new())
         .iter()
@@ -228,7 +232,7 @@ async fn fetch_workflow_metrics(
         .collect();
 
     Ok(WorkflowMetrics {
-        recent_runs: runs,
+        recent_runs: runs.clone(),
         average_duration_minutes: calculate_average_duration(&runs),
     })
 }

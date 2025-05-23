@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use chrono::Utc;
 use actix_web::web;
 
-use crate::models::{ServiceConfig, ServiceMetrics};
+use crate::models::service::{ServiceConfig, ServiceMetrics};
 use crate::state::AppState;
 
 // Check a single service and return its metrics
@@ -36,6 +36,7 @@ pub async fn check_service(client: &HttpClient, service: &ServiceConfig) -> Serv
         uptime_percentage: 0.0,
         availability_history: Vec::new(),
         last_checked: Utc::now(),
+        github_metrics: None,
     };
 
     // Return the updated metrics

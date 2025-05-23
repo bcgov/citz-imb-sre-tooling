@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use reqwest::Client as HttpClient;
 
-use crate::models::{ServiceConfig, ServiceMetrics};
+use crate::models::service::{ServiceConfig, ServiceMetrics};
 
 // App state
 pub struct AppState {

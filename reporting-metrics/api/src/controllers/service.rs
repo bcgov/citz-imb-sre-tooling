@@ -1,7 +1,7 @@
 use actix_web::{web, HttpResponse, Responder};
 use log::info;
 
-use crate::models::ServiceConfig;
+use crate::models::service::{ServiceConfig};
 use crate::state::AppState;
 
 // Register a new service to monitor

@@ -110,6 +110,34 @@ This project implements a service monitoring API in Rust, designed to track the 
    - Returns appropriate HTTP status codes
    - Includes informative error messages
 
+## GitHub Metrics Integration
+
+The API has been extended to collect and expose metrics from GitHub repositories associated with monitored services:
+
+1. **DevOps Metrics Collection**
+   - Added support for tracking key DevOps performance indicators
+   - GitHub repository references are stored with service definitions
+   - Background collector queries the GitHub API at regular intervals
+
+2. **Captured GitHub Metrics**
+   - **Deployment Frequency**: Tracks how often code changes are deployed
+     - Count of deployments in the last 30 days
+     - Average weekly deployment rate
+     - Timestamp of most recent deployment
+   - **Lead Time for Changes**: Measures time from code commit to production
+     - Average, median, and 90th percentile statistics
+   - **Workflow Metrics**: CI/CD performance data
+     - Status and conclusion of recent workflow runs
+     - Workflow run durations
+     - Success/failure ratios
+   - **Deployment Tags**: Tracks version information
+     - Latest deployed image tags by environment
+     - Deployment timestamps
+
+3. **API Endpoints**
+   - `/github-metrics`: Retrieve GitHub metrics for all services
+   - `/github-metrics/{name}`: Retrieve GitHub metrics for a specific service
+
 ## Future Extension Points
 
 The modular architecture allows for:

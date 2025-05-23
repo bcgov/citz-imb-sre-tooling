@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse, Responder};
 use log::info;
 
 use crate::state::AppState;
-use crate::models::ServiceMetrics;
+use crate::models::service::{ServiceMetrics};
 
 // Get metrics for a specific service
 pub async fn get_service_metrics(

@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use chrono::Utc;
 use actix_web::web;
 
-use crate::models::{ServiceConfig, ServiceMetrics};
+use crate::models::service::{ServiceConfig, ServiceMetrics};
 use crate::state::AppState;
 
 // Check a single service and return its metrics

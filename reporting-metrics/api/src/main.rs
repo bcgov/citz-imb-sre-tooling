@@ -14,8 +14,10 @@ mod controllers;
 use state::AppState;
 use services::health::health_check;
 use services::monitoring::metrics_collector;
+use services::github::collect_github_metrics;
 use controllers::service::{register_service, list_services, remove_service};
 use controllers::metrics::{get_all_metrics, get_service_metrics};
+use controllers::github::{get_github_metrics, get_service_github_metrics};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -46,6 +48,11 @@ async fn main() -> std::io::Result<()> {
     tokio::spawn(async move {
         metrics_collector(collector_state).await;
     });
+    // Start GitHub metrics collector
+    let github_collector_state = app_state.clone();
+    tokio::spawn(async move {
+        collect_github_metrics(github_collector_state).await;
+    });
 
     HttpServer::new(move || {
     App::new()
@@ -56,6 +63,8 @@ async fn main() -> std::io::Result<()> {
         .route("/services/{name}", web::delete().to(remove_service))
         .route("/metrics", web::get().to(get_all_metrics))
         .route("/metrics/{name}", web::get().to(get_service_metrics))
+        .route("/github-metrics", web::get().to(get_github_metrics))
+        .route("/github-metrics/{name}", web::get().to(get_service_github_metrics))
     })
     .bind(bind_addr)?
     .run()
